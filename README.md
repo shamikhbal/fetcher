@@ -24,6 +24,12 @@ Installation
 
 Example usage
 
+1. Import
+
+```
+import fetcher_client from "fetcher";
+```
+
 1. Create an instance
 
 ```
