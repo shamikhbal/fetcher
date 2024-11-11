@@ -16,6 +16,12 @@
 
 Fetcher is a promise-based HTTP client for nodejs. Build on top of Fetch but simplified.
 
+Installation
+
+```bash
+    npm install github:shamikhbal/fetcher
+```
+
 Example usage
 
 1. Create an instance
