@@ -30,25 +30,37 @@ Example usage
 import fetcher_client from "fetcher";
 ```
 
-1. Create an instance
+or
 
 ```
-const fetcher = fetcher_client.create_instance({
-      baseURL: "http://openlibrary.org",
-    });
+import { contentTypes, methods, create_instance } from "fetcher";
+```
+
+or using CommonJS
+
+```
+const fetcher = require("fetcher");
+```
+
+1. Create a fetch client instance
+
+```
+const fetcher = create_instance({
+  baseURL: "http://openlibrary.org",
+});
 ```
 
 2. Rest API call
 
 ```
 const result = await fetcher({
-      method: fetcher_client.methods.get,
-      url: "/search/lists.json",
-      contentType: fetcher_client.contentTypes.json,
-      params: {
-        q: "book",
-        limit: 20,
-        offset: 0,
-      },
-    });
+    method: methods.get,
+    url: "/search/lists.json",
+    contentType: contentTypes.json,
+    params: {
+      q: "book",
+      limit: 20,
+      offset: 0,
+    },
+  });
 ```
