@@ -48,7 +48,14 @@ export const fetcher = async ({
   }
 
   return await fetchWithTimeout(url, requestOptions, timeout)
-    .then(responseBuilder)
+    // .then(responseBuilder)
+    .then(async (res) => {
+      if (res.ok) {
+        return await responseBuilder(res);
+      } else {
+        throw await responseBuilder(res);
+      }
+    })
     .catch((error) => {
       throw error;
     });

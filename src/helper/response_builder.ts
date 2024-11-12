@@ -11,8 +11,6 @@ const responseBuilder = async (response: Response): Promise<ResponseBody> => {
       data: json,
     };
   } catch (err) {
-    console.error("Failed to parse response JSON:", err);
-
     return {
       ok: response.ok,
       status: response.status,

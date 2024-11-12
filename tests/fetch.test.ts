@@ -1,12 +1,13 @@
 import fetcher_client from "../src/fetcher";
 
-describe("Test API Call", () => {
+describe("[POSITIVE] - Test API Call", () => {
   it("should return list of books", async () => {
     const fetcher = fetcher_client.create_instance({
       baseURL: "http://openlibrary.org",
     });
 
     const result = await fetcher({
+      timeout: 100000,
       method: fetcher_client.methods.get,
       url: "/search/lists.json",
       contentType: fetcher_client.contentTypes.json,
@@ -24,3 +25,21 @@ describe("Test API Call", () => {
     expect(result.data.docs).toBeInstanceOf(Array);
   });
 });
+
+// describe("[NEGATIVE] - Test API Call", () => {
+//   it("should throw an error for invalid URL", async () => {
+//     const fetcher = fetcher_client.create_instance({
+//       baseURL: "http://openlibrary.org",
+//     });
+
+//     await expect(
+//       fetcher({
+//         method: fetcher_client.methods.get,
+//         url: "/dummy/test",
+//         contentType: fetcher_client.contentTypes.json,
+//       })
+//     ).rejects.toMatchObject({
+//       ok: false,
+//     });
+//   });
+// });
