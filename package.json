@@ -8,8 +8,16 @@
   "files": [
     "lib"
   ],
+  "exports": {
+    ".": {
+      "require": "./lib/index.js",
+      "import": "./lib/index.mjs",
+      "types": "./lib/index.d.ts"
+    }
+  },
   "scripts": {
     "test": "jest",
+    "validate": "npx --yes @arethetypeswrong/cli --pack .",
     "build": "jest && tsup"
   },
   "keywords": [],

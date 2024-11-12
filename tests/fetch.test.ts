@@ -1,4 +1,4 @@
-import fetcher_client from "../src/index";
+import fetcher_client from "../src/fetcher";
 
 describe("Test API Call", () => {
   it("should return list of books", async () => {

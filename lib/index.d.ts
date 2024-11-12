@@ -38,24 +38,5 @@ declare const create_instance: ({ baseURL, defaultHeaders, }: {
     baseURL?: string;
     defaultHeaders?: Record<string, string>;
 }) => ({ method, url, contentType, headers, params, body, timeout, }: RequestOptions) => Promise<ResponseBody>;
-declare const _default: {
-    create_instance: ({ baseURL, defaultHeaders, }: {
-        baseURL?: string;
-        defaultHeaders?: Record<string, string>;
-    }) => ({ method, url, contentType, headers, params, body, timeout, }: RequestOptions) => Promise<ResponseBody>;
-    fetcher: ({ method, url, contentType, headers, params, body, timeout, }: RequestOptions) => Promise<ResponseBody>;
-    contentTypes: {
-        readonly json: "application/json";
-        readonly formData: "multipart/form-data";
-        readonly formUrlEncoded: "application/x-www-form-urlencoded";
-        readonly textPlain: "text/plain";
-    };
-    methods: {
-        readonly get: "GET";
-        readonly post: "POST";
-        readonly put: "PUT";
-        readonly delete: "DELETE";
-    };
-};
 
-export { create_instance, _default as default, fetcher };
+export { contentTypes, create_instance, fetcher, methods };
