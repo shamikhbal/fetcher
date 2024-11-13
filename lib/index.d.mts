@@ -22,6 +22,7 @@ interface RequestOptions {
     params?: Record<string, any>;
     body?: any;
     timeout?: number;
+    logging?: boolean;
 }
 
 interface ResponseBody {
@@ -33,10 +34,11 @@ interface ResponseBody {
     errorMessage?: string;
 }
 
-declare const fetcher: ({ method, url, contentType, headers, params, body, timeout, }: RequestOptions) => Promise<ResponseBody>;
-declare const create_instance: ({ baseURL, defaultHeaders, }: {
+declare const fetcher: ({ method, url, contentType, headers, params, body, timeout, logging, }: RequestOptions) => Promise<ResponseBody>;
+declare const create_instance: ({ baseURL, defaultHeaders, logging, }: {
     baseURL?: string;
     defaultHeaders?: Record<string, string>;
+    logging?: boolean;
 }) => ({ method, url, contentType, headers, params, body, timeout, }: RequestOptions) => Promise<ResponseBody>;
 
 export { contentTypes, create_instance, fetcher, methods };
