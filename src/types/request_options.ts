@@ -9,4 +9,5 @@ export interface RequestOptions {
   params?: Record<string, any>;
   body?: any;
   timeout?: number;
+  logging?: boolean;
 }

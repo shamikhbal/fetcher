@@ -1,5 +1,6 @@
 import bodyParser from "./helper/body_parser";
 import headersParser from "./helper/header_parser";
+import logger from "./helper/logger";
 import encodeParams from "./helper/param_encoder";
 import responseBuilder from "./helper/response_builder";
 import { contentTypes } from "./types/content_types";
@@ -12,12 +13,21 @@ const fetchWithTimeout = (
   options: RequestInit,
   timeout: number
 ): Promise<Response> => {
-  return Promise.race([
-    fetch(url, options),
-    new Promise<Response>((_, reject) =>
-      setTimeout(() => reject(new Error("Request timed out")), timeout)
-    ),
-  ]);
+  return new Promise((resolve, reject) => {
+    const timer = setTimeout(() => {
+      reject(new Error("Request timed out"));
+    }, timeout);
+
+    fetch(url, options)
+      .then((response) => {
+        clearTimeout(timer); // Clear the timeout once fetch is resolved
+        resolve(response);
+      })
+      .catch((error) => {
+        clearTimeout(timer); // Clear the timeout if there's an error
+        reject(error);
+      });
+  });
 };
 
 export const fetcher = async ({
@@ -28,6 +38,7 @@ export const fetcher = async ({
   params,
   body,
   timeout = 5000,
+  logging = false,
 }: RequestOptions): Promise<ResponseBody> => {
   let requestOptions: RequestInit = {
     method: method,
@@ -47,9 +58,12 @@ export const fetcher = async ({
     });
   }
 
+  const start = Date.now();
   return await fetchWithTimeout(url, requestOptions, timeout)
     // .then(responseBuilder)
     .then(async (res) => {
+      if (logging) logger(start, method, url, res);
+
       if (res.ok) {
         return await responseBuilder(res);
       } else {
@@ -64,9 +78,11 @@ export const fetcher = async ({
 export const create_instance = ({
   baseURL = "",
   defaultHeaders = {},
+  logging = false,
 }: {
   baseURL?: string;
   defaultHeaders?: Record<string, string>;
+  logging?: boolean;
 }) => {
   return async ({
     method = methods.get,
@@ -88,6 +104,7 @@ export const create_instance = ({
       params,
       body,
       timeout,
+      logging,
     });
   };
 };
