@@ -1,3 +1,12 @@
-export { create_instance, fetcher } from "./fetcher";
-export { contentTypes } from "./types/content_types";
-export { methods } from "./types/methods";
+import Fetcher from "./fetcher";
+import { contentTypes } from "./types/content_types";
+import { methods } from "./types/methods";
+
+const fetcher = {
+  Fetcher,
+  contentTypes,
+  methods,
+};
+
+export default fetcher;
+export { contentTypes, Fetcher, methods };

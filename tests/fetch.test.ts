@@ -1,17 +1,20 @@
-import fetcher_client from "../src/fetcher";
+import { Fetcher, contentTypes, methods } from "../lib/index";
+
+const fetcher = new Fetcher({
+  baseURL: "http://openlibrary.org",
+  logging: true,
+  defaultHeaders: {
+    test: "value",
+  },
+});
 
 describe("[FETCHER] - GET API", () => {
   it("FETCHER - GET", async () => {
-    const fetcher = fetcher_client.create_instance({
-      baseURL: "http://openlibrary.org",
-      logging: true,
-    });
-
-    const result = await fetcher({
+    const result = await fetcher.request({
       timeout: 100000,
-      method: fetcher_client.methods.get,
+      method: methods.get,
       url: "/search/lists.json",
-      contentType: fetcher_client.contentTypes.json,
+      contentType: contentTypes.json,
       params: {
         q: "book",
         limit: 1000,
@@ -23,24 +26,24 @@ describe("[FETCHER] - GET API", () => {
     expect(result.status).toBe(200);
     expect(result.statusText).toBe("OK");
     expect(result.data).toHaveProperty("start", 0);
-    // expect(result.data.docs).toBeInstanceOf(Array);
   });
 });
 
-// describe("[NEGATIVE] - Test API Call", () => {
-//   it("should throw an error for invalid URL", async () => {
-//     const fetcher = fetcher_client.create_instance({
-//       baseURL: "http://openlibrary.org",
-//     });
+describe("[FETCHER] - GET API - method chaining", () => {
+  it("FETCHER method chaining - GET", async () => {
+    const result = await fetcher.get({
+      url: "/search/lists.json",
+      contentType: contentTypes.json,
+      params: {
+        q: "book",
+        limit: 1000,
+        offset: 0,
+      },
+    });
 
-//     await expect(
-//       fetcher({
-//         method: fetcher_client.methods.get,
-//         url: "/dummy/test",
-//         contentType: fetcher_client.contentTypes.json,
-//       })
-//     ).rejects.toMatchObject({
-//       ok: false,
-//     });
-//   });
-// });
+    expect(result.ok).toBe(true);
+    expect(result.status).toBe(200);
+    expect(result.statusText).toBe("OK");
+    expect(result.data).toHaveProperty("start", 0);
+  });
+});

@@ -34,11 +34,36 @@ interface ResponseBody {
     errorMessage?: string;
 }
 
-declare const fetcher: ({ method, url, contentType, headers, params, body, timeout, logging, }: RequestOptions) => Promise<ResponseBody>;
-declare const create_instance: ({ baseURL, defaultHeaders, logging, }: {
-    baseURL?: string;
-    defaultHeaders?: Record<string, string>;
-    logging?: boolean;
-}) => ({ method, url, contentType, headers, params, body, timeout, }: RequestOptions) => Promise<ResponseBody>;
+declare class Fetcher {
+    private baseURL;
+    private defaultHeaders;
+    private logging;
+    constructor({ baseURL, defaultHeaders, logging, }?: {
+        baseURL?: string;
+        defaultHeaders?: Record<string, string>;
+        logging?: boolean;
+    });
+    request({ method, url, contentType, headers, params, body, timeout, }: RequestOptions): Promise<ResponseBody>;
+    get({ url, contentType, headers, params, timeout, }: RequestOptions): Promise<ResponseBody>;
+    post({ url, contentType, headers, params, body, timeout, }: RequestOptions): Promise<ResponseBody>;
+    put({ url, contentType, headers, params, body, timeout, }: RequestOptions): Promise<ResponseBody>;
+    delete({ url, contentType, headers, params, body, timeout, }: RequestOptions): Promise<ResponseBody>;
+}
 
-export { contentTypes, create_instance, fetcher, methods };
+declare const fetcher: {
+    Fetcher: typeof Fetcher;
+    contentTypes: {
+        readonly json: "application/json";
+        readonly formData: "multipart/form-data";
+        readonly formUrlEncoded: "application/x-www-form-urlencoded";
+        readonly textPlain: "text/plain";
+    };
+    methods: {
+        readonly get: "GET";
+        readonly post: "POST";
+        readonly put: "PUT";
+        readonly delete: "DELETE";
+    };
+};
+
+export { Fetcher, contentTypes, fetcher as default, methods };

@@ -8,83 +8,46 @@ import { methods } from "./types/methods";
 import { RequestOptions } from "./types/request_options";
 import { ResponseBody } from "./types/response_body";
 
-const fetchWithTimeout = (
+const fetchWithTimeout = async (
   url: string,
   options: RequestInit,
   timeout: number
 ): Promise<Response> => {
-  return new Promise((resolve, reject) => {
-    const timer = setTimeout(() => {
-      reject(new Error("Request timed out"));
-    }, timeout);
-
-    fetch(url, options)
-      .then((response) => {
-        clearTimeout(timer); // Clear the timeout once fetch is resolved
-        resolve(response);
-      })
-      .catch((error) => {
-        clearTimeout(timer); // Clear the timeout if there's an error
-        reject(error);
-      });
-  });
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeout);
+  try {
+    const response = await fetch(url, {
+      ...options,
+      signal: controller.signal,
+    });
+    clearTimeout(timer);
+    return response;
+  } catch (error) {
+    clearTimeout(timer);
+    throw error;
+  }
 };
 
-export const fetcher = async ({
-  method = methods.get,
-  url,
-  contentType = contentTypes.json,
-  headers,
-  params,
-  body,
-  timeout = 5000,
-  logging = false,
-}: RequestOptions): Promise<ResponseBody> => {
-  let requestOptions: RequestInit = {
-    method: method,
-    headers: headersParser({ jsonHeaders: headers, contentType }),
-    redirect: "follow",
-  };
+class Fetcher {
+  private baseURL: string;
+  private defaultHeaders: Record<string, string>;
+  private logging: boolean;
 
-  if (params) {
-    const encodedParams = encodeParams(params);
-    url = `${url}?${encodedParams}`;
+  constructor({
+    baseURL = "",
+    defaultHeaders = {},
+    logging = false,
+  }: {
+    baseURL?: string;
+    defaultHeaders?: Record<string, string>;
+    logging?: boolean;
+  } = {}) {
+    this.baseURL = baseURL;
+    this.defaultHeaders = defaultHeaders;
+    this.logging = logging;
   }
 
-  if (body) {
-    requestOptions.body = bodyParser({
-      contentType,
-      jsonBody: body,
-    });
-  }
-
-  const start = Date.now();
-  return await fetchWithTimeout(url, requestOptions, timeout)
-    // .then(responseBuilder)
-    .then(async (res) => {
-      if (logging) logger(start, method, url, res);
-
-      if (res.ok) {
-        return await responseBuilder(res);
-      } else {
-        throw await responseBuilder(res);
-      }
-    })
-    .catch((error) => {
-      throw error;
-    });
-};
-
-export const create_instance = ({
-  baseURL = "",
-  defaultHeaders = {},
-  logging = false,
-}: {
-  baseURL?: string;
-  defaultHeaders?: Record<string, string>;
-  logging?: boolean;
-}) => {
-  return async ({
+  async request({
     method = methods.get,
     url,
     contentType = contentTypes.json,
@@ -92,26 +55,126 @@ export const create_instance = ({
     params,
     body,
     timeout = 5000,
-  }: RequestOptions): Promise<ResponseBody> => {
-    const finalUrl = baseURL + url;
-    const combinedHeaders = { ...defaultHeaders, ...headers };
+  }: RequestOptions): Promise<ResponseBody> {
+    const finalUrl = this.baseURL + url;
+    const combinedHeaders = { ...this.defaultHeaders, ...headers };
 
-    return fetcher({
+    console.log("Headers : ", combinedHeaders);
+
+    let requestOptions: RequestInit = {
       method,
-      url: finalUrl,
+      headers: headersParser({ jsonHeaders: combinedHeaders, contentType }),
+      redirect: "follow",
+    };
+
+    if (params) {
+      const encodedParams = encodeParams(params);
+      url = `${finalUrl}?${encodedParams}`;
+    }
+
+    if (body) {
+      requestOptions.body = bodyParser({
+        contentType,
+        jsonBody: body,
+      });
+    }
+
+    const start = Date.now();
+
+    try {
+      const response = await fetchWithTimeout(
+        finalUrl,
+        requestOptions,
+        timeout
+      );
+
+      if (this.logging) {
+        logger(start, method, finalUrl, response);
+      }
+
+      if (response.ok) {
+        return await responseBuilder(response);
+      } else {
+        throw await responseBuilder(response);
+      }
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async get({
+    url,
+    contentType = contentTypes.json,
+    headers = {},
+    params,
+    timeout = 5000,
+  }: RequestOptions): Promise<ResponseBody> {
+    return this.request({
+      method: methods.get,
+      url,
       contentType,
-      headers: combinedHeaders,
+      headers,
+      params,
+      timeout,
+    });
+  }
+
+  async post({
+    url,
+    contentType = contentTypes.json,
+    headers = {},
+    params,
+    body,
+    timeout = 5000,
+  }: RequestOptions): Promise<ResponseBody> {
+    return this.request({
+      method: methods.put,
+      url,
+      contentType,
+      headers,
       params,
       body,
       timeout,
-      logging,
     });
-  };
-};
+  }
 
-export default {
-  create_instance,
-  fetcher,
-  contentTypes,
-  methods,
-};
+  async put({
+    url,
+    contentType = contentTypes.json,
+    headers = {},
+    params,
+    body,
+    timeout = 5000,
+  }: RequestOptions): Promise<ResponseBody> {
+    return this.request({
+      method: methods.put,
+      url,
+      contentType,
+      headers,
+      params,
+      body,
+      timeout,
+    });
+  }
+
+  async delete({
+    url,
+    contentType = contentTypes.json,
+    headers = {},
+    params,
+    body,
+    timeout = 5000,
+  }: RequestOptions): Promise<ResponseBody> {
+    return this.request({
+      method: methods.delete,
+      url,
+      contentType,
+      headers,
+      params,
+      body,
+      timeout,
+    });
+  }
+}
+
+export default Fetcher;

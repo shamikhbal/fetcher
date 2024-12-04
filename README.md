@@ -14,7 +14,7 @@ Fetcher is a promise-based HTTP client for Node.js, built on top of the native F
 ## Installation
 
 ```bash
-npm install github:shamikhbal/fetcher
+npm install github:shamikhbal/fetcher#v1.1.0
 ```
 
 ## Importing Fetcher
@@ -24,19 +24,19 @@ You can import fetcher in various ways:
 ### ES Module
 
 ```javascript
-import fetcher_client from "fetcher";
+import Fetcher from "fetcher";
 ```
 
 or
 
 ```javascript
-import { contentTypes, methods, create_instance } from "fetcher";
+import { Fetcher, contentTypes, methods } from "fetcher";
 ```
 
 ### CommonJS
 
 ```javascript
-const fetcher = require("fetcher");
+const Fetcher = require("fetcher");
 ```
 
 ## Usage
@@ -46,10 +46,10 @@ const fetcher = require("fetcher");
 To simplify repeated API calls to the same base URL, you can create a client instance using create_instance. This function allows you to set a baseURL and default headers.
 
 ```javascript
-const fetcher = create_instance({
-  baseURL: "http://openlibrary.org", // Base URL for all requests
+const fetcher = new Fetcher({
+  baseURL: "https://api.example.com", // Base URL for all requests
   defaultHeaders: {
-    "User-Agent": "fetcher-client",
+    Authorization: "Bearer YOUR_TOKEN",
   },
   logging: true, // Optional, enables logging if set to true
 });
@@ -60,29 +60,29 @@ const fetcher = create_instance({
 With an instance created, you can now make REST API calls. Here is an example of a GET request with query parameters:
 
 ```javascript
-const result = await fetcher({
-  method: methods.get,
-  url: "/search/lists.json",
-  contentType: contentTypes.json,
-  params: {
-    q: "book",
-    limit: 20,
-    offset: 0,
-  },
+const response = await fetcher.get({
+  url: "/data",
+  params: { id: 123 },
 });
 ```
 
 ## API Reference
 
-create_instance(options)
-Creates a reusable fetcher client instance with specific configurations.
+### Fetcher Class
+
+The Fetcher class is the main interface for making HTTP requests.
+
+#### Constructor
+
+```javascript
+new Fetcher(options);
+```
 
 - Parameters:
-  - options {Object}: Configuration options for the instance.
-    - baseURL {string} (Optional): The base URL for all API requests.
-    - defaultHeaders {Object} (Optional): Default headers to apply to every request.
-    - logging {boolean} (Optional): Enables request/response logging if set to true.
-    - Returns: A function that can be used to make API requests with the configured options.
+  - options {Object} (Optional):
+    - baseURL {string}: The base URL for all API requests.
+    - defaultHeaders {Object}: Default headers to apply to every request.
+    - logging {boolean}: Enables request/response logging if set to true.
 
 fetcher(options)
 The main method for making an HTTP request.
@@ -105,6 +105,7 @@ The main method for making an HTTP request.
 2. POST - methods.post
 3. PUT - methods.put
 4. DELETE - methods.delete
+   ``
 
 ## Supported Content-Types
 
@@ -118,9 +119,9 @@ The main method for making an HTTP request.
 ### Importing and Configuring the Client
 
 ```javascript
-import { contentTypes, methods, create_instance } from "fetcher";
+import { Fetcher, contentTypes, methods } from "fetcher";
 
-const fetcher = create_instance({
+const fetcher = new Fetcher({
   baseURL: "https://api.example.com",
   defaultHeaders: {
     Authorization: "Bearer YOUR_TOKEN",
@@ -134,23 +135,17 @@ const fetcher = create_instance({
 ### GET Request
 
 ```javascript
-const response = await fetcher({
-  method: methods.get,
+const response = await fetcher.get({
   url: "/data",
-  contentType: contentTypes.json,
   params: { id: 123 },
 });
-console.log(response);
 ```
 
 ### POST Request
 
 ```javascript
-const response = await fetcher({
-  method: methods.get,
-  url: "/data",
-  contentType: contentTypes.json,
-  params: { id: 123 },
+const response = await fetcher.post({
+  url: "/submit",
+  body: { name: "John Doe", email: "john@example.com" },
 });
-console.log(response);
 ```
