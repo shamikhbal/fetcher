@@ -59,8 +59,6 @@ class Fetcher {
     const finalUrl = this.baseURL + url;
     const combinedHeaders = { ...this.defaultHeaders, ...headers };
 
-    console.log("Headers : ", combinedHeaders);
-
     let requestOptions: RequestInit = {
       method,
       headers: headersParser({ jsonHeaders: combinedHeaders, contentType }),
@@ -128,7 +126,7 @@ class Fetcher {
     timeout = 5000,
   }: RequestOptions): Promise<ResponseBody> {
     return this.request({
-      method: methods.put,
+      method: methods.post,
       url,
       contentType,
       headers,
