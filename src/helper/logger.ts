@@ -17,7 +17,13 @@ const pino_log = pino(
   process.stdout
 ); // Ensure the logs are written to stdout (console)
 
-const logger = (start: number, method: string, url: string, response: any) => {
+const logger = (
+  start: number,
+  method: string,
+  url: string,
+  response: any,
+  requestOptions: RequestInit
+) => {
   if (response.ok) {
     pino_log.info(
       `[${Date.now() - start}ms] [${response.status}] [${method}] - ${url}`

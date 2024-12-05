@@ -11,6 +11,9 @@ declare const methods: {
     readonly post: "POST";
     readonly put: "PUT";
     readonly delete: "DELETE";
+    readonly patch: "PATCH";
+    readonly head: "HEAD";
+    readonly options: "OPTIONS";
 };
 type Method = (typeof methods)[keyof typeof methods];
 
@@ -48,6 +51,9 @@ declare class Fetcher {
     post({ url, contentType, headers, params, body, timeout, }: RequestOptions): Promise<ResponseBody>;
     put({ url, contentType, headers, params, body, timeout, }: RequestOptions): Promise<ResponseBody>;
     delete({ url, contentType, headers, params, body, timeout, }: RequestOptions): Promise<ResponseBody>;
+    patch({ url, contentType, headers, params, body, timeout, }: RequestOptions): Promise<ResponseBody>;
+    head({ url, contentType, headers, params, timeout, }: RequestOptions): Promise<ResponseBody>;
+    options({ url, contentType, headers, params, timeout, }: RequestOptions): Promise<ResponseBody>;
 }
 
 declare const fetcher: {
@@ -63,6 +69,9 @@ declare const fetcher: {
         readonly post: "POST";
         readonly put: "PUT";
         readonly delete: "DELETE";
+        readonly patch: "PATCH";
+        readonly head: "HEAD";
+        readonly options: "OPTIONS";
     };
 };
 

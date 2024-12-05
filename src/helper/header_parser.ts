@@ -9,19 +9,33 @@ const headersParser = ({
 }): Headers => {
   const headers = new Headers();
 
-  if (jsonHeaders) {
-    headers.set(
-      "Content-Type",
-      jsonHeaders["Content-Type"] || contentType || contentTypes.json
-    );
+  // Handle content type setting
+  const effectiveContentType =
+    jsonHeaders?.["Content-Type"] || contentType || contentTypes.json;
 
+  switch (contentType) {
+    case contentTypes.formData:
+      // For FormData, do not set Content-Type
+      break;
+    case contentTypes.json:
+    case contentTypes.formUrlEncoded:
+    case contentTypes.textPlain:
+      headers.set("Content-Type", effectiveContentType);
+      break;
+    default:
+      // For unknown content types, set Content-Type if provided
+      if (effectiveContentType) {
+        headers.set("Content-Type", effectiveContentType);
+      }
+  }
+
+  // Add additional headers
+  if (jsonHeaders) {
     Object.entries(jsonHeaders).forEach(([key, value]) => {
-      if (key !== "Content-Type") {
+      if (key.toLowerCase() !== "content-type") {
         headers.append(key, value);
       }
     });
-  } else {
-    headers.set("Content-Type", contentType || contentTypes.json);
   }
 
   return headers;

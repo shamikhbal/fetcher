@@ -54,7 +54,7 @@ class Fetcher {
     headers = {},
     params,
     body,
-    timeout = 5000,
+    timeout = 10000,
   }: RequestOptions): Promise<ResponseBody> {
     const finalUrl = this.baseURL + url;
     const combinedHeaders = { ...this.defaultHeaders, ...headers };
@@ -87,7 +87,7 @@ class Fetcher {
       );
 
       if (this.logging) {
-        logger(start, method, finalUrl, response);
+        logger(start, method, finalUrl, response, requestOptions);
       }
 
       if (response.ok) {
@@ -105,7 +105,7 @@ class Fetcher {
     contentType = contentTypes.json,
     headers = {},
     params,
-    timeout = 5000,
+    timeout = 10000,
   }: RequestOptions): Promise<ResponseBody> {
     return this.request({
       method: methods.get,
@@ -123,7 +123,7 @@ class Fetcher {
     headers = {},
     params,
     body,
-    timeout = 5000,
+    timeout = 10000,
   }: RequestOptions): Promise<ResponseBody> {
     return this.request({
       method: methods.post,
@@ -142,7 +142,7 @@ class Fetcher {
     headers = {},
     params,
     body,
-    timeout = 5000,
+    timeout = 10000,
   }: RequestOptions): Promise<ResponseBody> {
     return this.request({
       method: methods.put,
@@ -161,7 +161,7 @@ class Fetcher {
     headers = {},
     params,
     body,
-    timeout = 5000,
+    timeout = 10000,
   }: RequestOptions): Promise<ResponseBody> {
     return this.request({
       method: methods.delete,
@@ -170,6 +170,59 @@ class Fetcher {
       headers,
       params,
       body,
+      timeout,
+    });
+  }
+
+  async patch({
+    url,
+    contentType = contentTypes.json,
+    headers = {},
+    params,
+    body,
+    timeout = 10000,
+  }: RequestOptions): Promise<ResponseBody> {
+    return this.request({
+      method: methods.patch,
+      url,
+      contentType,
+      headers,
+      params,
+      body,
+      timeout,
+    });
+  }
+
+  async head({
+    url,
+    contentType = contentTypes.json,
+    headers = {},
+    params,
+    timeout = 10000,
+  }: RequestOptions): Promise<ResponseBody> {
+    return this.request({
+      method: methods.head,
+      url,
+      contentType,
+      headers,
+      params,
+      timeout,
+    });
+  }
+
+  async options({
+    url,
+    contentType = contentTypes.json,
+    headers = {},
+    params,
+    timeout = 10000,
+  }: RequestOptions): Promise<ResponseBody> {
+    return this.request({
+      method: methods.options,
+      url,
+      contentType,
+      headers,
+      params,
       timeout,
     });
   }
