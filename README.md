@@ -20,7 +20,7 @@ Fetcher is a promise-based HTTP client for Node.js, built on top of the native F
 ---
 
 ```bash
-npm install github:shamikhbal/fetcher#v1.1.0
+npm install github:shamikhbal/fetcher#v1.1.2
 ```
 
 ## Importing Fetcher
