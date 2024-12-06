@@ -14,13 +14,14 @@ Fetcher is a promise-based HTTP client for Node.js, built on top of the native F
 - Configurable Content-Types (JSON, form data, URL-encoded, plain text)
 - Easy-to-use instance creation with base URL and default headers
 - Optional logging for request and response data
+- Build in file picker as a simple way to handle file uploads.
 
 ## Installation
 
 ---
 
 ```bash
-npm install github:shamikhbal/fetcher#v1.1.2
+npm install github:shamikhbal/fetcher#v1.1.3
 ```
 
 ## Importing Fetcher
@@ -38,7 +39,7 @@ import Fetcher from "fetcher";
 or
 
 ```javascript
-import { Fetcher, contentTypes, methods } from "fetcher";
+import { Fetcher, FilePicker, contentTypes, methods } from "fetcher";
 ```
 
 ### CommonJS
@@ -83,14 +84,13 @@ Fetcher supports file upload through the `formData` content type. Here are examp
 #### Single File Upload
 
 ```javascript
-const fileBuffer = fs.readFileSync(path);
-const fileBlob = new Blob([fileBuffer], { type: "text/xml" });
+const file = await FilePicker.getSync(filePath);
 
 const upload_record = await fetcher.post({
   url: "/upload",
   contentType: contentTypes.formData,
   body: {
-    file: fileBlob,
+    file: file,
   },
 });
 ```
@@ -98,23 +98,40 @@ const upload_record = await fetcher.post({
 #### Multiple File Upload
 
 ```javascript
-const fileBuffer1 = fs.readFileSync(path1);
-const fileBlob1 = new Blob([fileBuffer1], { type: "text/xml" });
-
-const fileBuffer2 = fs.readFileSync(path2);
-const fileBlob2 = new Blob([fileBuffer2], { type: "text/xml" });
-
-const fileBuffer3 = fs.readFileSync(path3);
-const fileBlob3 = new Blob([fileBuffer3], { type: "text/xml" });
+const file1 = await FilePicker.getSync(filePath1);
+const file2 = await FilePicker.getSync(filePath2);
+const file3 = await FilePicker.getSync(filePath3);
 
 const upload_record = await fetcher.post({
   url: "/upload",
   contentType: contentTypes.formData,
   body: {
-    files: [fileBlob1, fileBlob2, fileBlob3],
+    files: [file1, file2, file3],
   },
 });
 ```
+
+## FilePicker
+
+Fetcher includes a built-in FilePicker utility that allows you to easily read files from the file system.
+
+### Methods
+
+#### `FilePicker.getSync(filePath: string): File`
+
+Reads a file from the file system synchronously and returns a `File` object.
+
+- `filePath`: The path to the file to read.
+
+Returns a `File` object containing the file's contents, name, and MIME type.
+
+#### `FilePicker.get(filePath: string): Promise<File>`
+
+Reads a file from the file system asynchronously and returns a `Promise` that resolves to a `File` object.
+
+- `filePath`: The path to the file to read.
+
+Returns a `Promise` that resolves to a `File` object containing the file's contents, name, and MIME type.
 
 ## API Reference
 
@@ -152,7 +169,7 @@ The main method for making an HTTP request.
     - `body`: Request body, formatted based on the `contentType`
     - `timeout`: Timeout duration in milliseconds (default is 5000)
     - `logging`: Enable/disable logging for this request
-  - Returns: A Promise that resolves to the response data or rejects with an error
+  - Returns: A Promise that resolves
 
 ## Supported HTTP Methods
 

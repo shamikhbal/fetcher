@@ -56,6 +56,11 @@ declare class Fetcher {
     options({ url, contentType, headers, params, timeout, }: RequestOptions): Promise<ResponseBody>;
 }
 
+declare class FilePicker {
+    static getSync(filePath: string): File;
+    static get(filePath: string): Promise<File>;
+}
+
 declare const fetcher: {
     Fetcher: typeof Fetcher;
     contentTypes: {
@@ -75,4 +80,4 @@ declare const fetcher: {
     };
 };
 
-export { Fetcher, contentTypes, fetcher as default, methods };
+export { Fetcher, FilePicker, contentTypes, fetcher as default, methods };

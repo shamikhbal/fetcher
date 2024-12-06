@@ -1,4 +1,5 @@
 import Fetcher from "./fetcher";
+import FilePicker from "./helper/file_picker";
 import { contentTypes } from "./types/content_types";
 import { methods } from "./types/methods";
 
@@ -9,4 +10,4 @@ const fetcher = {
 };
 
 export default fetcher;
-export { contentTypes, Fetcher, methods };
+export { contentTypes, Fetcher, FilePicker, methods };

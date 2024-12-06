@@ -8,8 +8,8 @@ const fetcher = new Fetcher({
   },
 });
 
-describe("[FETCHER] - GET API", () => {
-  it("FETCHER - GET", async () => {
+describe("Fetcher GET Request", () => {
+  it("should return a successful response with expected data", async () => {
     const result = await fetcher.request({
       timeout: 100000,
       method: methods.get,
@@ -27,10 +27,24 @@ describe("[FETCHER] - GET API", () => {
     expect(result.statusText).toBe("OK");
     expect(result.data).toHaveProperty("start", 0);
   });
+
+  it("should throw an error when the request fails", async () => {
+    try {
+      await fetcher.request({
+        timeout: 100000,
+        method: methods.get,
+        url: "/non-existent-endpoint",
+        contentType: contentTypes.json,
+      });
+    } catch (error: any) {
+      expect(error.ok).toBe(false);
+      expect(error.status).toBe(404);
+    }
+  });
 });
 
-describe("[FETCHER] - GET API - method chaining", () => {
-  it("FETCHER method chaining - GET", async () => {
+describe("Fetcher GET Request with Method Chaining", () => {
+  it("should return a successful response with expected data", async () => {
     const result = await fetcher.get({
       url: "/search/lists.json",
       contentType: contentTypes.json,
@@ -45,5 +59,17 @@ describe("[FETCHER] - GET API - method chaining", () => {
     expect(result.status).toBe(200);
     expect(result.statusText).toBe("OK");
     expect(result.data).toHaveProperty("start", 0);
+  });
+
+  it("should throw an error when the request fails", async () => {
+    try {
+      await fetcher.get({
+        url: "/non-existent-endpoint",
+        contentType: contentTypes.json,
+      });
+    } catch (error: any) {
+      expect(error.ok).toBe(false);
+      expect(error.status).toBe(404);
+    }
   });
 });
