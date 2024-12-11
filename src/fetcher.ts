@@ -15,7 +15,6 @@ const fetchWithTimeout = async (
 ): Promise<Response> => {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeout);
-
   try {
     const response = await fetch(url, {
       ...options,
@@ -57,7 +56,7 @@ class Fetcher {
     body,
     timeout = 10000,
   }: RequestOptions): Promise<ResponseBody> {
-    const fullUrl = this.baseURL + url;
+    let finalUrl = this.baseURL + url;
     const combinedHeaders = { ...this.defaultHeaders, ...headers };
 
     let requestOptions: RequestInit = {
@@ -68,7 +67,7 @@ class Fetcher {
 
     if (params) {
       const encodedParams = encodeParams(params);
-      url = `${fullUrl}?${encodedParams}`;
+      finalUrl = `${finalUrl}?${encodedParams}`;
     }
 
     if (body) {
@@ -81,10 +80,14 @@ class Fetcher {
     const start = Date.now();
 
     try {
-      const response = await fetchWithTimeout(url, requestOptions, timeout);
+      const response = await fetchWithTimeout(
+        finalUrl,
+        requestOptions,
+        timeout
+      );
 
       if (this.logging) {
-        logger(start, method, url, response, requestOptions);
+        logger(start, method, finalUrl, response, requestOptions);
       }
 
       if (response.ok) {
