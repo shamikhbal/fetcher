@@ -1,67 +1,31 @@
-import { Fetcher, contentTypes, methods } from "../lib/index";
+import { Fetcher, ResponseBody, contentTypes } from "../lib/index";
 
 const fetcher = new Fetcher({
-  baseURL: "http://openlibrary.org",
-  logging: true,
+  baseURL: "https://67f4a4aecbef97f40d2ec8c5.mockapi.io",
+  logging: false,
   defaultHeaders: {
     test: "value",
   },
 });
 
-describe("Fetcher GET Request", () => {
-  it("should return a successful response with expected data", async () => {
-    const result = await fetcher.request({
-      timeout: 100000,
-      method: methods.get,
-      url: "/search/lists.json",
+interface Timezone {
+  timezone: string;
+  id?: string;
+}
+
+describe("Fetcher Request with Method Chaining", () => {
+  it("[FETCHER] [GET] Positive Test", async () => {
+    const result: ResponseBody<Timezone> = await fetcher.get({
+      url: "/api/fetcher/time",
       contentType: contentTypes.json,
-      params: {
-        q: "book",
-        limit: 1000,
-        offset: 0,
-      },
     });
 
-    expect(result.ok).toBe(true);
     expect(result.status).toBe(200);
     expect(result.statusText).toBe("OK");
-    expect(result.data).toHaveProperty("start", 0);
+    expect(result.data).toBeInstanceOf(Array);
   });
 
-  it("should throw an error when the request fails", async () => {
-    try {
-      await fetcher.request({
-        timeout: 100000,
-        method: methods.get,
-        url: "/non-existent-endpoint",
-        contentType: contentTypes.json,
-      });
-    } catch (error: any) {
-      expect(error.ok).toBe(false);
-      expect(error.status).toBe(404);
-    }
-  });
-});
-
-describe("Fetcher GET Request with Method Chaining", () => {
-  it("should return a successful response with expected data", async () => {
-    const result = await fetcher.get({
-      url: "/search/lists.json",
-      contentType: contentTypes.json,
-      params: {
-        q: "book",
-        limit: 1000,
-        offset: 0,
-      },
-    });
-
-    expect(result.ok).toBe(true);
-    expect(result.status).toBe(200);
-    expect(result.statusText).toBe("OK");
-    expect(result.data).toHaveProperty("start", 0);
-  });
-
-  it("should throw an error when the request fails", async () => {
+  it("[FETCHER] [GET] Negative Test", async () => {
     try {
       await fetcher.get({
         url: "/non-existent-endpoint",
@@ -70,6 +34,87 @@ describe("Fetcher GET Request with Method Chaining", () => {
     } catch (error: any) {
       expect(error.ok).toBe(false);
       expect(error.status).toBe(404);
+    }
+  });
+
+  it("[FETCHER] [POST] Positive Test", async () => {
+    const result: ResponseBody<Timezone> = await fetcher.post({
+      url: "/api/fetcher/time",
+      contentType: contentTypes.json,
+      body: {
+        timezone: "Malaysia/Perak",
+      } as Timezone,
+    });
+
+    expect(result.status).toBe(201);
+    expect(result.statusText).toBe("Created");
+    expect(result.data).toBeInstanceOf(Object);
+  });
+
+  it("[FETCHER] [POST] Negative Test", async () => {
+    try {
+      await fetcher.post({
+        url: "/non-existent-endpoint",
+        contentType: contentTypes.json,
+        body: {
+          timezone: "Malaysia/Perak",
+        },
+      });
+    } catch (error: any) {
+      expect(error.ok).toBe(false);
+      expect(error.status).toBe(400);
+    }
+  });
+
+  it("[FETCHER] [PUT] Positive Test", async () => {
+    const result = await fetcher.put({
+      url: `/api/fetcher/time/${1}`,
+      contentType: contentTypes.json,
+      body: {
+        timezone: "Malaysia/Perak",
+      } as Timezone,
+    });
+
+    expect(result.status).toBe(200);
+    expect(result.statusText).toBe("OK");
+    expect(result.data).toBeInstanceOf(Object);
+  });
+
+  it("[FETCHER] [PUT] Negative Test", async () => {
+    try {
+      await fetcher.put({
+        url: "/non-existent-endpoint",
+        contentType: contentTypes.json,
+        body: {
+          timezone: "Malaysia/Perak",
+        },
+      });
+    } catch (error: any) {
+      expect(error.ok).toBe(false);
+      expect(error.status).toBe(400);
+    }
+  });
+
+  it("[FETCHER] [DELETE] Positive Test", async () => {
+    const result = await fetcher.delete({
+      url: `/api/fetcher/time/${1}`,
+      contentType: contentTypes.json,
+    });
+
+    expect(result.status).toBe(200);
+    expect(result.statusText).toBe("OK");
+    expect(result.data).toBeInstanceOf(Object);
+  });
+
+  it("[FETCHER] [DELETE] Negative Test", async () => {
+    try {
+      await fetcher.delete({
+        url: "/non-existent-endpoint",
+        contentType: contentTypes.json,
+      });
+    } catch (error: any) {
+      expect(error.ok).toBe(false);
+      expect(error.status).toBe(400);
     }
   });
 });

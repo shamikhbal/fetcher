@@ -17,22 +17,22 @@ declare const methods: {
 };
 type Method = (typeof methods)[keyof typeof methods];
 
-interface RequestOptions {
+interface RequestOptions<T = any> {
     method?: Method;
     url: string;
     contentType?: ContentType;
     headers?: Record<string, string>;
     params?: Record<string, any>;
-    body?: any;
+    body?: T;
     timeout?: number;
     logging?: boolean;
 }
 
-interface ResponseBody {
+interface ResponseBody<T = any> {
     ok: boolean;
     status: number;
     statusText: string;
-    data: any;
+    data: T;
     error?: boolean;
     errorMessage?: string;
 }
@@ -59,6 +59,7 @@ declare class Fetcher {
 declare class FilePicker {
     static getSync(filePath: string): File;
     static get(filePath: string): Promise<File>;
+    private static getMimeType;
 }
 
 declare const fetcher: {
@@ -80,4 +81,4 @@ declare const fetcher: {
     };
 };
 
-export { Fetcher, FilePicker, contentTypes, fetcher as default, methods };
+export { Fetcher, FilePicker, type ResponseBody, contentTypes, fetcher as default, methods };

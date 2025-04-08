@@ -1,8 +1,8 @@
-export interface ResponseBody {
+export interface ResponseBody<T = any> {
   ok: boolean;
   status: number;
   statusText: string;
-  data: any;
+  data: T;
   error?: boolean;
   errorMessage?: string;
 }

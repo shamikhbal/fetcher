@@ -2,6 +2,7 @@ import Fetcher from "./fetcher";
 import FilePicker from "./helper/file_picker";
 import { contentTypes } from "./types/content_types";
 import { methods } from "./types/methods";
+import { ResponseBody } from "./types/response_body";
 
 const fetcher = {
   Fetcher,
@@ -10,4 +11,4 @@ const fetcher = {
 };
 
 export default fetcher;
-export { contentTypes, Fetcher, FilePicker, methods };
+export { contentTypes, Fetcher, FilePicker, methods, ResponseBody };

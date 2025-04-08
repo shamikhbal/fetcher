@@ -1,12 +1,8 @@
 # Fetcher
 
-=====================================
-
 Fetcher is a promise-based HTTP client for Node.js, built on top of the native Fetch API but with simplified syntax. It includes support for configurable HTTP methods, content types, timeouts, and an optional logging mechanism.
 
 ## Features
-
----
 
 - Promise-based HTTP client
 - Supports GET, POST, PUT, DELETE, PATCH, HEAD, and OPTIONS methods
@@ -14,14 +10,15 @@ Fetcher is a promise-based HTTP client for Node.js, built on top of the native F
 - Configurable Content-Types (JSON, form data, URL-encoded, plain text)
 - Easy-to-use instance creation with base URL and default headers
 - Optional logging for request and response data
-- Build in file picker as a simple way to handle file uploads.
-
-## Installation
+- Built-in File Picker to easily handle file uploads
+- TypeScript support with static typing for `body` and `ResponseBody<T>`
 
 ---
 
+## Installation
+
 ```bash
-npm install github:shamikhbal/fetcher#v1.1.3
+npm install github:shamikhbal/fetcher#v1.1.6
 ```
 
 ## Importing Fetcher
@@ -39,7 +36,7 @@ import Fetcher from "fetcher";
 or
 
 ```javascript
-import { Fetcher, FilePicker, contentTypes, methods } from "fetcher";
+import { Fetcher, FilePicker, contentTypes, methods, ResponseBody } from "fetcher";
 ```
 
 ### CommonJS
@@ -75,6 +72,28 @@ const response = await fetcher.get({
   url: "/data",
   params: { id: 123 },
 });
+```
+
+### TypeScript Example with Static Types
+
+```javascript
+type Timezone = {
+  timezone: string;
+};
+
+type TimeResponse = {
+  time: string;
+  timezone: string;
+};
+
+const result: ResponseBody<TimeResponse> = await fetcher.post({
+  url: "/api/fetcher/time",
+  contentType: contentTypes.json,
+  body: {
+    timezone: "Malaysia/Perak",
+  } as Timezone,
+});
+
 ```
 
 ### File Upload
